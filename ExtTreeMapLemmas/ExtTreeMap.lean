@@ -8,16 +8,6 @@ variable {α β : Type}
 
 attribute [local instance low] beqOfOrd
 attribute [grind ext] ExtTreeMap.ext_getElem?
-attribute [grind] ExtTreeMap.distinct_keys_toList ExtTreeMap.getElem?_ofList_of_mem
-
-@[grind =]
-theorem getElem?_pfilter
-  {cmp : α → α → Ordering} [TransCmp cmp]
-  {m : ExtTreeMap α β cmp} {f : α → β → Bool} {k : α} :
-  (m.filter f)[k]? =
-  m[k]?.pfilter (fun v h' => f (m.getKey k (contains_eq_isSome_getElem?.trans (Option.isSome_of_eq_some h'))) v) :=
-  ExtDTreeMap.get?_filter m.inner f k
-
 variable {α β : Type} {cmp : α → α → Ordering}
 variable {k : α} {m m₁ m₂ : Std.ExtTreeMap α β cmp} {f : α → β → β → β}
 
@@ -102,15 +92,6 @@ lemma mergeWith_of_comm (h : ∀ {x}, Std.Commutative (f x)) :
   m₁.mergeWith f m₂ = m₂.mergeWith f m₁ := by
   have {k} := @Commutative.comm (op := f k) _ (@h _)
   grind
-
-@[simp, grind =]
-lemma toList_ofList [BEq α] [LawfulBEq α] : ofList (toList m) cmp = m := by
-  grind
-
-@[simp, grind =]
-lemma getElem?_filter {β : Type} {f : α → β → Bool} {k : α} {m : ExtTreeMap α β cmp} :
-  (m.filter f)[k]? = m[k]?.filter (f k) := by
-  simp [ExtTreeMap.getElem?_pfilter]
 
 variable {f : α → β → Bool}
 

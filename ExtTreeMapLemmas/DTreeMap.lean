@@ -208,29 +208,7 @@ theorem Const.get?_mergeWith [TransCmp cmp] [LawfulEqCmp cmp]
   simp [get?, mergeWith, h₀, hFindToGetInt, hFoldInt]
 
 
-/-
-  PROOF BY Markus Himmel from:
-  ```
-    https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/ExtTreeMap.20-.20Filter.20.2F.20MergeWith/near/530761978
-  ```
--/
 
-attribute [local instance low] beqOfOrd
-
-theorem Internal.Impl.Const.get?_filter [Ord α] [TransOrd α]
-    (m : DTreeMap.Internal.Impl α (fun _ => β)) (h : m.WF) (f : α → β → Bool) (k : α) :
-    Const.get? (m.filter f h.balanced).1 k = (Const.get? m k).pfilter (fun v h' => f (m.getKey k ((contains_eq_isSome_get? h).trans (Option.isSome_of_eq_some h'))) v) := by
-  -- This manual proof is usually done by the `simp_to_model` tactic
-  simp only [Const.get?_eq_getValue? h.filter.ordered, toListModel_filter,
-    Const.get?_eq_getValue? h.ordered, getKey_eq_getKey h.ordered]
-  apply Std.Internal.List.Const.getValue?_filter
-  apply h.ordered.distinctKeys
-
-theorem get?_filter {cmp : α → α → Ordering} [TransCmp cmp]
-    (m : DTreeMap α (fun _ => β) cmp) (f : α → β → Bool) (k : α) :
-    Const.get? (m.filter f) k = (Const.get? m k).pfilter (fun v h' => f (m.getKey k (Const.contains_eq_isSome_get?.trans (Option.isSome_of_eq_some h'))) v) :=
-  letI : Ord α := ⟨cmp⟩
-  DTreeMap.Internal.Impl.Const.get?_filter m.inner m.wf _ _
 
 end DTreeMap
 
